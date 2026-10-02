@@ -21,7 +21,8 @@ export default function HorizontalCards() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
-  const textRevealRef = useRef<HTMLDivElement>(null);
+  const startingTextRevealRef = useRef<HTMLDivElement>(null);
+  const endingTextRevealRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     const mainTrigger = gsap.to(scrollRef.current, {
@@ -38,6 +39,59 @@ export default function HorizontalCards() {
         invalidateOnRefresh: true,
       },
     });
+
+    const boxes = gsap.utils.toArray<HTMLDivElement>(".museum-box");
+
+    boxes.forEach((box) => {
+      const randomRotation = gsap.utils.random(-35, 35);
+      const randomY = gsap.utils.random(-50, 50);
+      const randomXOFFset = gsap.utils.random(-100, 100);
+
+      gsap.to(box, {
+        rotation: randomRotation,
+        y: randomY,
+        x: randomXOFFset,
+        scrollTrigger: {
+          trigger: box,
+          containerAnimation: mainTrigger,
+          start: "left 90%",
+          end: "right center",
+          scrub: true,
+        },
+      });
+    });
+
+    gsap.fromTo(
+      endingTextRevealRef.current,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: scrollRef.current,
+          containerAnimation: mainTrigger,
+          start: "72% center",
+          end: "90% center",
+          scrub: true,
+        },
+      },
+    );
+
+    gsap.fromTo(
+      startingTextRevealRef.current,
+      { opacity: 1 },
+      {
+        opacity: 0,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: scrollRef.current,
+          containerAnimation: mainTrigger,
+          start: "12% center",
+          end: "30% center",
+          scrub: true,
+        },
+      },
+    );
   }, []);
 
   return (
@@ -45,18 +99,19 @@ export default function HorizontalCards() {
       ref={triggerRef}
       className="relative h-screen w-full overflow-hidden bg-[#004d2c]"
     >
+      {/* Starting Text Reveal */}
       <div
-        ref={textRevealRef}
+        ref={startingTextRevealRef}
         className="absolute inset-0 flex flex-col items-center justify-center z-0"
       >
         <h2 className="text-[12vw] font-black text-[#10b981] leading-none text-center uppercase italic">
-          Museum <br /> of Money
+          Starting <br /> Text Reveals
         </h2>
         <div className="mt-10 px-6 py-3 border border-[#10b981] rounded-xl text-white uppercase text-lg font-bold tracking-widest cursor-pointer hover:bg-white hover:text-[#10b981] transition-all duration-300">
           View all Cards
         </div>
       </div>
-
+      {/*  Horizontal Cards */}
       <div
         ref={scrollRef}
         className="relative z-10 h-full flex items-center pointer-events-none"
@@ -73,6 +128,18 @@ export default function HorizontalCards() {
             </div>
           </div>
         ))}
+      </div>
+      {/* Ending Text Reveal */}
+      <div
+        ref={endingTextRevealRef}
+        className="absolute inset-0 flex flex-col items-center justify-center z-0"
+      >
+        <h2 className="text-[12vw] font-black text-[#10b981] leading-none text-center uppercase italic">
+          Ending <br /> Text Reveals
+        </h2>
+        <div className="mt-10 px-6 py-3 border border-[#10b981] rounded-xl text-white uppercase text-lg font-bold tracking-widest cursor-pointer hover:bg-white hover:text-[#10b981] transition-all duration-300">
+          View all Cards
+        </div>
       </div>
     </section>
   );
